@@ -16,6 +16,12 @@ interface CurrencyRepository {
         targetCurrency: String,
         amount: Double
     ): ConvertCurrencyDto
+
+    suspend fun compareCurrency(
+        baseCurrency: String,
+        targetCurrency: String,
+        amount: Double
+    ): List<ConvertCurrencyDto>
     fun setDarkMode(isDark: Boolean)
     fun isDark() : Boolean
 }
