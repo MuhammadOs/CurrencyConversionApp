@@ -1,10 +1,9 @@
 package com.example.currencyconversionapp.presentation.feature.conversion
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.currencyconversionapp.data.source.remote.model.ConvertCurrencyDto
 import com.example.currencyconversionapp.data.source.remote.model.CurrencyDto
-import com.example.currencyconversionapp.domain.repository.CurrencyRepository
+import com.example.currencyconversionapp.data.repo.CurrencyRepository
 import com.example.currencyconversionapp.presentation.base.BaseViewModel
 import com.example.currencyconversionapp.presentation.util.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,7 @@ import javax.inject.Inject
 class ConverterViewModel @Inject constructor(
     private val currencyRepository: CurrencyRepository,
     private val dispatcherProvider: DispatcherProvider
-) : BaseViewModel<ConvertUiState>(ConvertUiState()), ConverterContract {
+) : BaseViewModel<ConvertUiState>(ConvertUiState()), ConverterInteractionListener {
 
     init {
         convertCurrency(
@@ -26,7 +25,7 @@ class ConverterViewModel @Inject constructor(
             amount = state.value.amount.toDoubleOrNull()
         )
         getAllCurrencies()
-        getAllFavCurrencies()
+       getAllFavCurrencies()
     }
 
     fun convertCurrency(
@@ -73,7 +72,7 @@ class ConverterViewModel @Inject constructor(
     }
 
     fun getAllCurrencies() {
-        _state.update { state -> state.copy(isLoadingList = true, isError = false) }
+        _state.update { state -> state.copy(isLoadingList = true) }
         tryToExecute(
             function = {
                 currencyRepository.getAllCurrencies()
@@ -114,7 +113,7 @@ class ConverterViewModel @Inject constructor(
             val favList = currencyRepository.getCurrencies()
             if (favList.isEmpty()) {
                 _state.update { state ->
-                    state.copy(isFavoriteLoading = false, isError = false,
+                    state.copy(isFavoriteLoading = false,
                         favCurrencies = emptyList())
                 }
                 return@launch
@@ -123,7 +122,7 @@ class ConverterViewModel @Inject constructor(
                 currency.code
             }
             _state.update { state ->
-                state.copy(isFavoriteLoading = true, isError = false,
+                state.copy(isFavoriteLoading = true, isFavError = false,
                     favCurrencies = favList.map {
                         CurrencyUiModel(
                             code = it.code,

@@ -2,7 +2,7 @@ package com.example.currencyconversionapp.presentation.feature.comparison
 
 import com.example.currencyconversionapp.data.source.remote.model.ConvertCurrencyDto
 import com.example.currencyconversionapp.data.source.remote.model.CurrencyDto
-import com.example.currencyconversionapp.domain.repository.CurrencyRepository
+import com.example.currencyconversionapp.data.repo.CurrencyRepository
 import com.example.currencyconversionapp.presentation.base.BaseViewModel
 import com.example.currencyconversionapp.presentation.feature.conversion.CurrencyCode
 import com.example.currencyconversionapp.presentation.feature.conversion.CurrencyUiModel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ComparisonViewModel @Inject constructor(
     private val currencyRepository: CurrencyRepository,
     private val dispatcherProvider: DispatcherProvider
-) : BaseViewModel<CompareUiState>(CompareUiState()), CompareContract {
+) : BaseViewModel<CompareUiState>(CompareUiState()), CompareInteractionListener {
 
     init {
         compareCurrency(
@@ -46,8 +46,8 @@ class ComparisonViewModel @Inject constructor(
     private fun handleConversionSuccess(convertedAmount: List<ConvertCurrencyDto>) {
         val decimalFormat = DecimalFormat("#.##")
 
-        val formattedAmountOne = decimalFormat.format(convertedAmount[0].conversion_rate.toDouble() * convertedAmount[0].amount.toDouble())
-        val formattedAmountTwo = decimalFormat.format(convertedAmount[1].conversion_rate.toDouble() * convertedAmount[1].amount.toDouble())
+        val formattedAmountOne = decimalFormat.format(convertedAmount[0].conversion_rate.toDouble())
+        val formattedAmountTwo = decimalFormat.format(convertedAmount[1].conversion_rate.toDouble())
 
         _state.update { state ->
             state.copy(
